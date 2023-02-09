@@ -189,9 +189,10 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
     public void start(final boolean startFactory) throws MQClientException {
         switch (this.serviceState) {
+            //启动
             case CREATE_JUST:
                 this.serviceState = ServiceState.START_FAILED;
-
+                //检查配置
                 this.checkConfig();
 
                 if (!this.defaultMQProducer.getProducerGroup().equals(MixAll.CLIENT_INNER_PRODUCER_GROUP)) {
@@ -200,6 +201,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
 
                 this.mQClientFactory = MQClientManager.getInstance().getOrCreateMQClientInstance(this.defaultMQProducer, rpcHook);
 
+                //注册
                 boolean registerOK = mQClientFactory.registerProducer(this.defaultMQProducer.getProducerGroup(), this);
                 if (!registerOK) {
                     this.serviceState = ServiceState.CREATE_JUST;
@@ -208,6 +210,7 @@ public class DefaultMQProducerImpl implements MQProducerInner {
                         null);
                 }
 
+                //设置路由信息
                 this.topicPublishInfoTable.put(this.defaultMQProducer.getCreateTopicKey(), new TopicPublishInfo());
 
                 if (startFactory) {
